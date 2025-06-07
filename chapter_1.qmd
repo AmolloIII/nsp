@@ -1,0 +1,101 @@
+# Chapter I: Introduction
+
+::: justified
+This chapter sets the foundation for the NSP, outlining its purpose, historical context, and legal framework.
+
+## Overview
+
+NSP as a national spatial vision for long-term development, covering 47 counties and the EEZ, with a 30-year horizon (2015-2045) and 10-year reviews. It aims for organized, integrated, sustainable, and balanced development. NSP’s plays the role as a coordinating framework for sectoral planning, ensuring sustainable development by integrating social, economic, and political policies.
+
+## Historical Background
+
+### Pre-Independence Planning
+
+This include the colonial-era planning, such as the Swynnerton Plan (1954) and Town Land Ordinance (1902), focused on resource exploitation and segregated settlements.
+
+### Post-Independence Planning
+
+This includes post-1963 efforts, including National Development Plans (NDPs) from 1964-2016 and Regional Physical Development Plans (RPDPs) from 1968-1970, noting fragmented approaches and the lack of a national spatial framework. There were 7 RPDPs and 6 Regional Development Authorities (RDAs) like TARDA (1981) and KVDA (1979).
+
+### Scope
+
+NSPovers the entire territory, totaling 582,646 km², including 21 km² EEZ and 111,999 km² total EEZ area, addressing urban, rural, and regional planning.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.cap: "47 Counties and EEZ"
+library(sf)
+library(mapview)
+library(rKenyaCensus)
+
+eez <- st_read("eez.shp", quiet = TRUE)
+Kenya <- rKenyaCensus::KenyaCounties_SHP %>%
+  st_as_sf() %>%
+  st_transform(, crs = 4326)%>%
+  st_make_valid()
+
+mapviewOptions(basemaps = "CartoDB.Positron")
+
+# Create styled map views
+ke <- mapview(Kenya,
+              col.regions = NA,       # no fill
+              color = "black",        # border color
+              lwd = 1.5,              # line width
+              legend = FALSE)
+
+ez <- mapview(eez,
+              col.regions = "lightskyblue",  # lake blue fill
+              color = "blue",               # border color
+              alpha = 0.7,                  # transparency
+              lwd = 1.2,
+              legend = FALSE)
+
+ke + ez
+```
+
+### Purpose of the National Spatial Plan
+
+Aims to provide a spatial framework for economic efficiency, environmental sustainability, and balanced development, guiding lower-level plans.
+
+### Rationale for the National Spatial Plan
+
+Highlights the need to address uncoordinated development, land use conflicts, and regional disparities, aligning with Vision 2030. It identifies 6 challenges, including rapid urbanization and environmental degradation.
+
+### Methodology
+
+Details a participatory process, including consultations with Ministries, Departments, and Agencies (MDAs), benchmarking with global models (e.g., Malaysia, Singapore), and projections/scenario building.
+
+### Strategic Direction
+
+**Vision:** Envisions Kenya as a globally competitive, spatially integrated nation with sustainable land use, aligning with Vision 2030.
+
+**Goal:** To optimize land and resource use for balanced development, targeting 10% economic growth from 2012-2030.
+
+**Objectives:** Includes 5 objectives, such as enhancing economic efficiency, promoting regional balance, and ensuring environmental conservation.
+
+### Principles
+
+Emphasizes 7 principles, including equity, sustainability, public participation, and efficiency, promoting compact cities and urban containment.
+
+## Constitutional, Legal and Policy Basis
+
+### Constitutional Basis
+
+Anchored in Articles 60, 66, 68, and 69 of the Constitution, focusing on land use and environmental rights.
+
+### Legal Basis
+
+Draws from the Physical and Land Use Planning Act, 2019, and Land Registration Act, 2012.
+
+### Kenya Vision 2030
+
+Aligns with Vision 2030’s economic, social, and political pillars, identified as a flagship project under the Second Medium-Term Plan (2013-2017), with population projections to 71 million by 2030.
+
+### Sector Policies
+
+Integrates policies like the National Land Policy, Agricultural Sector Development Strategy 2009-2020, National Housing Policy 2004, and National Tourism Strategy 2013-2018, ensuring coherence and avoiding duplications (e.g., agriculture contributes 10% annual economic growth).
+
+***National Physical Planning Framework:*** Establishes the NSP as the apex spatial planning framework, coordinating with county and local plans.
+:::

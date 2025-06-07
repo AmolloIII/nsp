@@ -1,0 +1,308 @@
+# Chapter II: The Planning Context
+
+::: justified
+
+## Overview
+
+This chapter outlines the key perspectives and trends that informed the National Spatial Plan's preparation. These include: Kenya's **geographical context** (location, physical structure, diversity), **population growth and dynamics** (projected to reach 77.5 million by 2030 and 111 million by 2045), **economic growth trends and prospects** (including barriers to achieving the targeted 10% GDP growth), the critical role of **transport and infrastructure** as development enablers, **human settlement patterns** impacting urban and rural land use, and existing **land use categories** (primarily agriculture, built-up areas, and conservation).
+
+## Strategic Geographical Position and Assets
+
+Kenya occupies a strategically advantageous location on Africa's eastern coast, straddling the Equator. It shares borders with Uganda, South Sudan, Ethiopia, Tanzania, and Somalia. Its position provides global connectivity via air and sea transport. The country's total territory spans 582,646 km², including significant inland water bodies like Lake Victoria (3,755 km²) and Rift Valley lakes (Nakuru, Naivasha, Baringo, Turkana, Bogoria). Crucially, Kenya boasts a 1,420 km Indian Ocean coastline (45.7% in Lamu County, featuring islands) and extensive maritime territory, including a 142,400 km² Exclusive Economic Zone (EEZ).
+
+## Regional Hub Status
+
+Kenya's geography underpins its role as a major regional hub. The Port of Mombasa serves not only Kenya but also acts as a vital gateway for landlocked neighbors including Northern Tanzania, Uganda, Rwanda, Burundi, South Sudan, and the Democratic Republic of Congo. This strategic location, combined with its extensive coastline and maritime resources, solidifies Kenya's position as an international transportation, trade, business, and financial center within the region.
+
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig.cap: "Kenya in Context"  
+# Load required packages
+library(sf)
+library(leaflet)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(dplyr)
+# Load world countries
+world <- ne_countries(scale = "medium", returnclass = "sf")
+# Filter African countries
+africa <- world[world$continent == "Africa", ]
+
+# Define countries in each regional bloc
+comesa <- c("Burundi", "Comoros", "Democratic Republic of the Congo", "Djibouti", "Egypt", 
+            "Eritrea", "Eswatini", "Ethiopia", "Kenya", "Libya", "Madagascar", "Malawi", 
+            "Mauritius", "Rwanda", "Seychelles", "Somalia", "Sudan", "Tunisia", "Uganda", 
+            "Zambia", "Zimbabwe")
+
+igad <- c("Djibouti", "Eritrea", "Ethiopia", "Kenya", "Somalia", "South Sudan", "Sudan", "Uganda")
+
+eac <- c("Burundi", "Democratic Republic of the Congo", "Kenya", "Rwanda", 
+         "South Sudan", "United Republic of Tanzania", "Uganda")
+
+
+# Filter and label each as separate sf objects
+comesa_sf <- world %>% filter(admin %in% comesa)
+igad_sf   <- world %>% filter(admin %in% igad)
+eac_sf    <- world %>% filter(admin %in% eac)
+kenya_sf  <- world %>% filter(admin == "Kenya")
+
+ # Your target coordinates (longitude, latitude)
+ lon <- 18.73076
+ lat <- 6.516366
+# Create the leaflet map
+leaflet() %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  
+  # Africa base layer in grey
+  addPolygons(data = africa,
+              group = "Africa",
+              color = "grey", weight = 1, fillOpacity = 0.2, label = ~admin) %>%
+  
+  # COMESA in blue
+  addPolygons(data = comesa_sf,
+              group = "COMESA",
+              color = "blue", weight = 1, fillOpacity = 0.5, label = ~admin) %>%
+  
+  # IGAD in green
+  addPolygons(data = igad_sf,
+              group = "IGAD",
+              color = "green", weight = 1, fillOpacity = 0.5, label = ~admin) %>%
+  
+  # EAC in yellow
+  addPolygons(data = eac_sf,
+              group = "EAC",
+              color = "orange", weight = 1, fillOpacity = 0.5, label = ~admin) %>%
+  
+  # Kenya outline for highlight
+  addPolygons(data = kenya_sf,
+              group = "Kenya",
+              color = "red", weight = 2, fillOpacity = 0.7, label = "Kenya") %>%
+  
+  # Add layers control
+  addLayersControl(
+    overlayGroups = c("Africa", "Kenya", "COMESA", "IGAD", "EAC"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  
+  # Hide these layers by default
+  hideGroup(c("COMESA", "IGAD", "EAC")) %>%
+  setView(lng = lon, lat = lat, zoom = 3)
+
+```
+
+
+
+
+
+## Physiography
+### Topography
+Kenya’s diverse topography is characterized by plains, plateaus, hills, and mountains (see Map 2.3). One of the most spectacular features is the Great Rift Valley system that extends from the Middle East to Mozambique and bisects the country into the west and east of Rift Valley. It features the snowcapped Mt. Kenya, Mt. Elgon, Mau Escarpment, Cherangani Hills and Aberdare ranges and Lakes such as Turkana, Magadi, Naivasha, Nakuru, Baringo, Elementaita, Bogoria). To the west of the Rift Valley lies Lake Victoria.
+
+The northern and south eastern parts of the country are generally plains punctuated with numerous mountains and hills. Chalbi is the only true desert in Kenya and is found to the east of Lake Turkana. The coastal area contains coral reefs, mangroves and white sandy beaches of the Indian Ocean.
+
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig.cap: "Topography Map" 
+# Load required packages
+library(sf)
+library(leaflet)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(dplyr)
+library(rKenyaCensus)
+
+Kenyaste <- rKenyaCensus::KenyaCounties_SHP %>%
+  st_as_sf() %>%
+  st_transform(, crs = 4326)%>%
+  st_make_valid()
+# Load world countries
+world <- ne_countries(scale = "medium", returnclass = "sf")
+kenya_sf  <- world %>% filter(admin == "Kenya")
+
+leaflet() %>%
+  addProviderTiles("OpenTopoMap", group = "OpenTopoMap") %>%
+  addPolygons(data = kenya_sf, color = "black", weight = 4, fill = FALSE, label = ~admin) %>%
+  addPolygons(data = Kenyaste, color = "black", weight = 1, fill = FALSE, label = ~County)
+```
+
+
+
+
+### Soils
+Assesses soil types and their suitability for agriculture and construction, noting variations across regions.
+
+### Rock Formation
+Examines geological features affecting resource extraction and infrastructure, such as mining potential.
+
+### Vegetation
+Analyzes vegetation zones, from forests to savannahs, for conservation and land use planning, with 23 National Parks (29,408.7 km²) and 28 Reserves (17,396.6 km²).
+
+### Rainfall and Temperature
+Maps climatic variations influencing agriculture and water resource management, with water per capita at 647 m³.
+
+### Drainage
+Details river systems and drainage basins critical for water management and flood control, including major rivers like Tana and Athi.
+
+## Rich and Diverse Natural Resource Endowment
+Evaluates Kenya’s resources, including minerals, wildlife, and energy potential (e.g., hydro 2,987 MW, geothermal 7,000-10,000 MW), for sustainable exploitation.
+
+### Population and Demographic Trends
+**Overview**
+
+Reviews population growth, from 38 million in 2009 to ~45.5 million currently, projected to 71 million by 2030, with spatial implications.
+
+**Urban Population Demographic Trends**
+
+Notes rapid urbanization, with urban population at 31.3% in 2009, 40% in 2014, and projected >50% by 2030, Nairobi nearing 5 million by 2015.
+
+**Demographic Trends**
+
+Analyzes age, gender, and migration patterns affecting planning, with literacy at 87%.
+
+**Socio-Cultural Aspect**
+
+Considers cultural diversity and its influence on settlement patterns, such as ethnic distribution.
+
+## Economic Performance and Prospects
+**Overview**
+
+Summarizes Kenya’s economic growth trajectory, with GDP growth at 6.1% in 2006.
+
+**Economic Trends**
+Notes sectoral contributions, with agriculture, tourism, and services as key drivers.
+
+**Major Drivers of the Economy in Kenya**
+
+Identifies agriculture, tourism, and services, with agriculture contributing significantly to growth.
+
+**Constraints to Economic Growth**
+
+Highlights land scarcity, infrastructure gaps, and regional disparities, with road network at 178,000 km (35% classified, 15% paved).
+
+**Opportunities and Potentials for Economic Growth**
+Points to untapped resources and emerging sectors like ICT, with electricity capacity at 1,533 MW and peak demand at 1,236 MW.
+
+## Transport and Infrastructure
+### Transport
+Assesses road, rail (2,778 km), air, and port systems, noting projects like the Standard Gauge Railway (SGR) and Lamu port.
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig.cap: "Transport Map" 
+
+library(osmdata)
+library(sf)
+library(leaflet)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+
+kenya <- ne_countries(country = "Kenya", returnclass = "sf")
+# Define a bounding box (e.g., for Kenya)
+bbox <- getbb("Kenya")
+
+# Query major roads (motorways, trunks, primary roads)
+highways <- opq(bbox = bbox) %>%
+  add_osm_feature(key = "highway", 
+                  value = c("motorway", "trunk", "primary")) %>%
+  osmdata_sf()
+
+# Query railways
+railways <- opq(bbox = bbox) %>%
+  add_osm_feature(key = "railway", value = "rail") %>%
+  osmdata_sf()
+# Query pipelines
+pipelines <- opq(bbox = bbox) %>%
+  add_osm_feature(key = "man_made", value = "pipeline") %>%
+  osmdata_sf()
+
+# Query airports
+airports <- opq(bbox = bbox) %>%
+  add_osm_feature(key = "aeroway", value = "aerodrome") %>%
+  osmdata_sf()
+
+# 2. Ensure same CRS
+kenya <- st_transform(kenya, 4326)
+airport_pts <- st_transform(airports$osm_points, 4326)
+
+# 3. Clip airports (points) to Kenya polygon
+clipped_airports <- st_intersection(airport_pts, kenya)
+
+
+# Ensure CRS match
+pipelines_sf <- st_transform(pipelines$osm_lines, st_crs(kenya))
+
+# Clip pipelines to Kenya boundary
+clipped_pipelines <- st_intersection(pipelines_sf, kenya)
+
+# Clip line features to Kenya polygon
+clipped_highways <- st_intersection(highways$osm_lines, kenya)
+clipped_railways <- st_intersection(railways$osm_lines, kenya)
+
+# Plot in Leaflet
+leaflet() %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolylines(data = clipped_pipelines, color = "blue", group = "Pipelines") %>%
+  addCircles(data = clipped_airports, color = "red", group = "Airports") %>%
+  addPolylines(data = clipped_highways, color = "red", weight = 2, group = "Roads") %>%
+  addPolylines(data = clipped_railways, color = "black", weight = 2, group = "Railways") %>%
+  addPolygons(data = kenya, fill = FALSE, color = "purple", weight = 3) %>%
+  addLayersControl(overlayGroups = c("Roads", "Railways"),
+                   options = layersControlOptions(collapsed = FALSE)) %>%
+  
+  # Hide these layers by default
+  hideGroup(c("Pipelines", "Airports"))
+
+```
+
+
+
+
+
+### Physical Infrastructure
+Reviews energy, water, and ICT infrastructure, identifying gaps, with water per capita at 647 m³ and electricity capacity at 1,533 MW.
+
+### Social Infrastructure
+Examines health, education, and housing facilities, emphasizing urban-rural disparities, with literacy at 87%.
+
+## Land Use Patterns
+### Land Use
+Analyzes current practices and inefficiencies, with total area 582,646 km², water bodies at 2.3%.
+
+### Agricultural Land
+Focuses on arable land distribution and productivity challenges, noting agriculture’s 10% growth contribution.
+
+### Urban Land
+Addresses unplanned urban sprawl and informal settlements, with urban population projected >50% by 2030.
+
+### Environmental Conservation Areas
+Identifies protected areas for biodiversity, with 23 National Parks (29,408.7 km²) and 28 Reserves (17,396.6 km²).
+
+## Human Settlements
+### Functions of Human Settlements
+Defines roles in economic and social development, such as service provision and residential functions.
+
+### Human Settlement Patterns in Kenya
+Describes clustered and dispersed patterns, influenced by topography and resources.
+
+### Urban Settlement
+Highlights challenges like slum proliferation and infrastructure deficits, with Nairobi’s population nearing 5 million by 2015.
+
+### Rural Settlements
+Notes rural depopulation and need for service provision, with rural poverty and migration challenges.
+
+:::
+
